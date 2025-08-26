@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Hub - Sign Up</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Animated background elements */
+        .bg-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #22c55e, #16a34a);
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .shape:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .shape:nth-child(2) {
+            width: 120px;
+            height: 120px;
+            top: 60%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+
+        .shape:nth-child(3) {
+            width: 60px;
+            height: 60px;
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 48px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 1;
+            animation: slideUp 0.8s ease-out;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 32px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            box-shadow: 0 8px 32px rgba(34, 197, 94, 0.3);
+        }
+
+        .logo-text {
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .welcome {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .welcome h1 {
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .welcome p {
+            color: #94a3b8;
+            font-size: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 16px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .form-label {
+            display: block;
+            color: #e2e8f0;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            letter-spacing: 0.2px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .form-input::placeholder {
+            color: #64748b;
+        }
+
+        .password-group {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            color: #22c55e;
+        }
+
+        .password-strength {
+            margin-top: 8px;
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .strength-bar {
+            height: 3px;
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            transition: background-color 0.3s ease;
+        }
+
+        .strength-bar.active {
+            background: #22c55e;
+        }
+
+        .strength-text {
+            font-size: 12px;
+            color: #64748b;
+            margin-left: 8px;
+            min-width: 60px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .checkbox.checked {
+            background: #22c55e;
+            border-color: #22c55e;
+        }
+
+        .checkbox-label {
+            color: #94a3b8;
+            font-size: 14px;
+            line-height: 1.5;
+            cursor: pointer;
+        }
+
+        .checkbox-label a {
+            color: #22c55e;
+            text-decoration: none;
+        }
+
+        .checkbox-label a:hover {
+            text-decoration: underline;
+        }
+
+        .sign-up-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 32px rgba(34, 197, 94, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sign-up-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .sign-up-btn:hover::before {
+            left: 100%;
+        }
+
+        .sign-up-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(34, 197, 94, 0.4);
+        }
+
+        .sign-up-btn:active {
+            transform: translateY(0px);
+        }
+
+        .sign-up-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 32px 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .divider span {
+            color: #64748b;
+            font-size: 14px;
+            margin: 0 16px;
+        }
+
+        .social-buttons {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .social-btn {
+            flex: 1;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+        }
+
+        .social-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .sign-in-link {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .sign-in-link a {
+            color: #22c55e;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .sign-in-link a:hover {
+            color: #16a34a;
+        }
+
+        /* Responsive design */
+        @media (max-width: 480px) {
+            .container {
+                padding: 32px 24px;
+                margin: 16px;
+            }
+
+            .welcome h1 {
+                font-size: 24px;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    <div class="container">
+        <div class="logo">
+            <div class="logo-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="11" stroke="white" stroke-width="2" fill="none"/>
+                    <path d="M12 2v20M2 12h20" stroke="white" stroke-width="1"/>
+                    <circle cx="12" cy="12" r="3" fill="white"/>
+                </svg>
+            </div>
+            <span class="logo-text">Football Hub</span>
+        </div>
+
+        <div class="welcome">
+            <h1>Create Account</h1>
+            <p>Join the ultimate football community</p>
+        </div>
+
+        <form id="signUpForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="firstName">First Name</label>
+                    <input type="text" id="firstName" class="form-input" placeholder="John" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="lastName">Last Name</label>
+                    <input type="text" id="lastName" class="form-input" placeholder="Doe" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="email">Email Address</label>
+                <input type="email" id="email" class="form-input" placeholder="john.doe@example.com" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <div class="password-group">
+                    <input type="password" id="password" class="form-input" placeholder="Create a strong password" required>
+                    <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="password-strength">
+                    <div class="strength-bar"></div>
+                    <div class="strength-bar"></div>
+                    <div class="strength-bar"></div>
+                    <div class="strength-bar"></div>
+                    <span class="strength-text">Weak</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="confirmPassword">Confirm Password</label>
+                <div class="password-group">
+                    <input type="password" id="confirmPassword" class="form-input" placeholder="Confirm your password" required>
+                    <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="checkbox-group">
+                <div class="checkbox" id="termsCheckbox" onclick="toggleCheckbox()">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" style="display: none;">
+                        <polyline points="20,6 9,17 4,12"></polyline>
+                    </svg>
+                </div>
+                <label class="checkbox-label" onclick="toggleCheckbox()">
+                    I agree to the <a href="#" onclick="showTerms()">Terms of Service</a> and <a href="#" onclick="showPrivacy()">Privacy Policy</a>
+                </label>
+            </div>
+
+            <button type="submit" class="sign-up-btn">Create Account</button>
+        </form>
+
+        <div class="divider">
+            <span>Or sign up with</span>
+        </div>
+
+        <div class="social-buttons">
+            <a href="#" class="social-btn" onclick="signUpWithGoogle()">
+                <svg width="18" height="18" viewBox="0 0 24 24" style="margin-right: 8px;">
+                    <path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#fff" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#fff" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#fff" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Google
+            </a>
+            
+        </div>
+
+        <div class="sign-in-link">
+            Already have an account? <a href="signin.html" onclick="showSignIn()">Sign in</a>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-auth-compat.min.js"></script>
+
+    <script>
+        // Firebase configuration - REPLACE WITH YOUR CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyB9dGMHwmPlwW4cMuNIQuitqB4AUeU7_1Q",
+            authDomain: "foot-b7d96.firebaseapp.com",
+            projectId: "foot-b7d96",
+            storageBucket: "foot-b7d96.firebasestorage.app",
+            messagingSenderId: "295019500598",
+            appId: "1:295019500598:web:7b9f1e431c0cf68adb7497",
+            measurementId: "G-JKJL32C8JP"
+};
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // Configure Google Auth Provider
+        const googleProvider = new firebase.auth.GoogleAuthProvider();
+        googleProvider.setCustomParameters({
+            prompt: 'select_account'
+        });
+
+        let termsAccepted = false;
+
+        // Error handling helper
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: rgba(239, 68, 68, 0.9);
+                color: white;
+                padding: 16px 20px;
+                border-radius: 12px;
+                backdrop-filter: blur(10px);
+                box-shadow: 0 8px 32px rgba(239, 68, 68, 0.3);
+                z-index: 1000;
+                animation: slideIn 0.3s ease-out;
+                max-width: 300px;
+            `;
+            errorDiv.textContent = message;
+            document.body.appendChild(errorDiv);
+
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: rgba(34, 197, 94, 0.9);
+                color: white;
+                padding: 16px 20px;
+                border-radius: 12px;
+                backdrop-filter: blur(10px);
+                box-shadow: 0 8px 32px rgba(34, 197, 94, 0.3);
+                z-index: 1000;
+                animation: slideIn 0.3s ease-out;
+                max-width: 300px;
+            `;
+            successDiv.textContent = message;
+            document.body.appendChild(successDiv);
+
+            setTimeout(() => {
+                successDiv.remove();
+            }, 4000);
+        }
+
+        // Password strength checker (hiển thị màu sắc và thông báo rõ ràng)
+        function checkPasswordStrength(password) {
+            const strengthBars = document.querySelectorAll('.strength-bar');
+            const strengthText = document.querySelector('.strength-text');
+            let strength = 0;
+            let text = 'Yếu';
+            let color = '#ef4444';
+            if (password.length >= 8) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            strengthBars.forEach((bar, index) => {
+                bar.classList.toggle('active', index < strength);
+                if (index < strength) {
+                    if (strength <= 2) bar.style.background = '#ef4444'; // đỏ
+                    else if (strength === 3) bar.style.background = '#f59e42'; // cam
+                    else bar.style.background = '#22c55e'; // xanh
+                } else {
+                    bar.style.background = 'rgba(255,255,255,0.1)';
+                }
+            });
+            switch (strength) {
+                case 0:
+                case 1:
+                    text = 'Yếu';
+                    color = '#ef4444';
+                    break;
+                case 2:
+                    text = 'Trung bình';
+                    color = '#f59e42';
+                    break;
+                case 3:
+                    text = 'Khá';
+                    color = '#fbbf24';
+                    break;
+                case 4:
+                case 5:
+                    text = 'Mạnh';
+                    color = '#22c55e';
+                    break;
+            }
+            strengthText.textContent = text;
+            strengthText.style.color = color;
+            return strength;
+        }
+
+        // Password input event listener
+        document.getElementById('password').addEventListener('input', function(e) {
+            checkPasswordStrength(e.target.value);
+        });
+
+        // Form validation and submission
+        document.getElementById('signUpForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const btn = document.querySelector('.sign-up-btn');
+            // Validation
+            if (!firstName || !lastName) {
+                showError('Please enter your full name');
+                return;
+            }
+            if (!email || !password || !confirmPassword) {
+                showError('Please fill in all fields');
+                return;
+            }
+            if (password !== confirmPassword) {
+                showError('Passwords do not match');
+                return;
+            }
+            if (password.length < 6) {
+                showError('Password must be at least 6 characters long');
+                return;
+            }
+            if (!termsAccepted) {
+                showError('Please accept the Terms of Service and Privacy Policy');
+                return;
+            }
+            // Add loading state
+            const originalText = btn.innerHTML;
+            btn.innerHTML = 'Creating Account...';
+            btn.disabled = true;
+            try {
+                // Create user account
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                // Update user profile with name
+                await user.updateProfile({
+                    displayName: `${firstName} ${lastName}`
+                });
+                btn.innerHTML = 'Account Created! Redirecting...';
+                showSuccess(`Welcome to Football Hub, ${firstName}!`);
+                // Xóa confirm password và ô tick
+                document.getElementById('confirmPassword').value = '';
+                document.getElementById('termsCheckbox').classList.remove('checked');
+                termsAccepted = false;
+                // Chuyển hướng sang trangsignin.html sau khi đăng ký thành công
+                setTimeout(() => {
+                    window.location.href = 'signin.html';
+                }, 2000);
+            } catch (error) {
+                console.error('Sign up error:', error);
+                let errorMessage = 'Account creation failed. Please try again.';
+                switch (error.code) {
+                    case 'auth/email-already-in-use':
+                        errorMessage = 'An account with this email already exists.';
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage = 'Please enter a valid email address.';
+                        break;
+                    case 'auth/operation-not-allowed':
+                        errorMessage = 'Email/password accounts are not enabled.';
+                        break;
+                    case 'auth/weak-password':
+                        errorMessage = 'Password is too weak. Please choose a stronger password.';
+                        break;
+                    case 'auth/network-request-failed':
+                        errorMessage = 'Network error. Please check your connection.';
+                        break;
+                }
+                showError(errorMessage);
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+
+        // Google Sign Up
+        async function signUpWithGoogle() {
+            try {
+                const result = await auth.signInWithPopup(googleProvider);
+                const user = result.user;
+                
+                showSuccess(`Welcome ${user.displayName}!`);
+                
+                // Redirect after successful signup
+                setTimeout(() => {
+                    window.location.href = '/dashboard'; // Change to your dashboard URL
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Google sign up error:', error);
+                
+                let errorMessage = 'Google sign up failed. Please try again.';
+                
+                switch (error.code) {
+                    case 'auth/popup-closed-by-user':
+                        errorMessage = 'Sign up was cancelled.';
+                        break;
+                    case 'auth/popup-blocked':
+                        errorMessage = 'Popup was blocked. Please allow popups and try again.';
+                        break;
+                    case 'auth/account-exists-with-different-credential':
+                        errorMessage = 'An account already exists with the same email address.';
+                        break;
+                    case 'auth/network-request-failed':
+                        errorMessage = 'Network error. Please check your connection.';
+                        break;
+                }
+                
+                showError(errorMessage);
+            }
+        }
+
+
+        // Password toggle
+        function togglePassword(fieldId) {
+            const passwordField = document.getElementById(fieldId);
+            const toggle = passwordField.nextElementSibling.querySelector('svg');
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggle.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 2.06-2.94C5.06 7.06 8.53 4 12 4s6.94 3.06 8.94 5.06a18.45 18.45 0 0 1 2.06 2.94s-4 8-11 8a10.07 10.07 0 0 1-5.94-1.06l1.41-1.41A8.07 8.07 0 0 0 12 18c5.52 0 9-6.05 9-6s-3.48-6-9-6-9 6-9 6a8.07 8.07 0 0 0 .59 3L3.17 15A10.07 10.07 0 0 1 12 22c7.72-.01 11-8.01 11-8s-3.28-7.99-11-7.99S1.72 14 .28 14a10.07 10.07 0 0 1 .59-3L2.17 9A12.07 12.07 0 0 0 .28 14c-.01-.01-.01-.02-.01-.03C1 .97-.01-.03-.01-.03S4 .97-.01 .97c7 .01 .99 .99 .99 .99s4 .98 .99 .98c7 .01 .99 .99 .99 .99s4 .98 .99 .98c7 .01 .99 .99 .99 .99s4 .98 .99 .98c7 .01z"/>';
+            } else {
+                passwordField.type = 'password';
+            }
+        }
+
+        // Checkbox toggle (tick xanh)
+        function toggleCheckbox() {
+            const checkbox = document.getElementById('termsCheckbox');
+            const svg = checkbox.querySelector('svg');
+            if (checkbox.classList.contains('checked')) {
+                checkbox.classList.remove('checked');
+                svg.style.display = 'none';
+                termsAccepted = false;
+            } else {
+                checkbox.classList.add('checked');
+                svg.style.display = 'block';
+                termsAccepted = true;
+            }
+        }
+    </script>
+</body>
+</html>

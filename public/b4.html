@@ -1,0 +1,279 @@
+<!-- <!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Football Players Dashboard</title>
+  <style>
+    /* ===== Reset & Base ===== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+      color: #F8FAFC;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ===== Header ===== */
+    .header {
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+      padding: 1rem 0;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .header-content {
+      max-width: 1400px; margin: 0 auto; padding: 0 2rem;
+      display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+    }
+    .logo { font-size: 1.6rem; font-weight: 800;
+      background: linear-gradient(135deg, #06B6D4, #3B82F6);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+
+    /* ===== Search ===== */
+    .search-container { position: relative; max-width: 520px; flex: 1; display: flex; gap: .5rem; align-items: center; }
+    .search-input {
+      width: 100%; padding: 0.75rem 1rem 0.75rem 2.25rem;
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 12px; color: #F8FAFC; font-size: 0.95rem; transition: all 0.3s ease;
+    }
+    .search-input:focus { outline: none; border-color: #06B6D4; box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1); background: rgba(30, 41, 59, 0.8); }
+    .search-input[disabled] { opacity: .55; cursor: not-allowed; }
+    .search-btn { padding: .75rem 1rem; border-radius: 12px; background: linear-gradient(135deg, #06B6D4, #3B82F6); border: none; color: white; font-weight: 600; cursor: pointer; transition: transform .15s ease; }
+    .search-btn:active { transform: scale(.98); }
+    .search-btn[disabled] { filter: grayscale(60%); opacity: .65; cursor: not-allowed; }
+
+    .auth-btn { padding: .65rem .95rem; border-radius: 10px; border: 1px solid rgba(148,163,184,.2); background: rgba(30,41,59,.6); color: #F8FAFC; cursor: pointer; text-decoration: none; transition: .2s; font-weight: 600; }
+    .auth-btn:hover { border-color: #06B6D4; }
+
+    /* ===== Page ===== */
+    .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+    .filters { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
+    .filter-btn { padding: 0.75rem 1.5rem; background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 50px; color: #F8FAFC; cursor: pointer; transition: all 0.3s ease; font-weight: 500; }
+    .filter-btn:hover, .filter-btn.active { background: linear-gradient(135deg, #06B6D4, #3B82F6); border-color: transparent; transform: translateY(-2px); box-shadow: 0 10px 25px rgba(6, 182, 212, 0.3); }
+
+    .players-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; animation: fadeIn 0.6s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ===== Card ===== */
+    .player-card { background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(148, 163, 184, 0.1); border-radius: 20px; padding: 0; cursor: pointer; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); backdrop-filter: blur(20px); overflow: hidden; position: relative; }
+    .player-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #06B6D4, #3B82F6, #8B5CF6); transform: scaleX(0); transition: transform 0.3s ease; }
+    .player-card:hover::before { transform: scaleX(1); }
+    .player-card:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4); border-color: rgba(6, 182, 212, 0.3); }
+    .card-header { position: relative; height: 200px; background: linear-gradient(135deg, #1E293B, #334155); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .card-header::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(59, 130, 246, 0.1)); opacity: 0; transition: opacity 0.3s ease; }
+    .player-card:hover .card-header::before { opacity: 1; }
+    .player-avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #06B6D4, #3B82F6); display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 700; color: white; position: relative; z-index: 2; transition: transform 0.3s ease; overflow: hidden; }
+    .player-card:hover .player-avatar { transform: scale(1.1); }
+    .card-body { padding: 1.5rem; }
+    .player-name { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; color: #F8FAFC; }
+    .player-position { display: inline-block; padding: 0.25rem 0.75rem; background: linear-gradient(135deg, #06B6D4, #3B82F6); border-radius: 20px; font-size: 0.75rem; font-weight: 600; color: white; margin-bottom: 1rem; }
+    .player-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    .stat { text-align: center; padding: 0.75rem; background: rgba(15, 23, 42, 0.6); border-radius: 12px; border: 1px solid rgba(148, 163, 184, 0.1); }
+    .stat-value { font-size: 1.125rem; font-weight: 700; color: #06B6D4; margin-bottom: 0.25rem; }
+    .stat-name { font-size: 0.75rem; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.5px; }
+    .player-info { display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid rgba(148, 163, 184, 0.1); }
+    .team { font-size: 0.875rem; color: #94A3B8; }
+    .rating { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; }
+    .rating-value { color: #F59E0B; }
+
+    /* ===== Particles ===== */
+    .floating-particles { position: fixed; inset: 0; pointer-events: none; z-index: -1; }
+    .particle { position: absolute; width: 4px; height: 4px; background: rgba(6, 182, 212, 0.3); border-radius: 50%; animation: float 6s infinite linear; }
+    @keyframes float { 0% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(-100px) rotate(360deg); opacity: 0; } }
+
+    /* ===== Toast ===== */
+    .toast { position: fixed; right: 16px; top: 16px; padding: 12px 16px; border-radius: 12px; background: rgba(15,23,42,.96); border: 1px solid rgba(148,163,184,.3); color: #E2E8F0; box-shadow: 0 10px 30px rgba(0,0,0,.35); display: flex; gap: 10px; align-items: center; transform: translateY(-20px); opacity: 0; pointer-events: none; transition: all .22s ease; z-index: 9999; }
+    .toast.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
+    .toast a { color: #06B6D4; text-decoration: underline; }
+
+    @media (max-width: 768px) {
+      .header-content { flex-direction: column; gap: 1rem; }
+      .search-container { max-width: 100%; margin: 0; }
+      .players-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="floating-particles" id="particles"></div>
+
+  <header class="header">
+    <div class="header-content">
+      <div class="logo">⚽ FootballPro</div>
+      <div class="search-container">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="position:absolute;left:.75rem;color:#94A3B8">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+        <input type="text" class="search-input" placeholder="Search players..." id="searchInput" />
+        <button id="searchBtn" class="search-btn">Search</button>
+      </div>
+      <!-- Nút đăng nhập dẫn đến signin.html -->
+      <a href="signin.html" id="authBtn" class="auth-btn">Đăng nhập</a>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="filters">
+      <button class="filter-btn active" data-position="all">All Players</button>
+      <button class="filter-btn" data-position="GK">Goalkeepers</button>
+      <button class="filter-btn" data-position="DEF">Defenders</button>
+      <button class="filter-btn" data-position="MID">Midfielders</button>
+      <button class="filter-btn" data-position="FWD">Forwards</button>
+    </div>
+
+    <div class="players-grid" id="playersGrid"></div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <script>
+    // ==== Mock trạng thái đăng nhập (đọc từ localStorage nếu có) ====
+    let isLoggedIn = localStorage.getItem('auth') === '1';
+
+    // ==== Data cầu thủ (đầy đủ như bản gốc) ====
+    const players = [
+      { name: "Lionel Messi", position: "FWD", team: "Inter Miami", rating: 9.2, goals: 28, assists: 15, matches: 32, speed: 85, avatar: "src/licensed-image.jpg" },
+      { name: "Kylian Mbappé", position: "FWD", team: "Real Madrid", rating: 9.0, goals: 35, assists: 12, matches: 38, speed: 98 },
+      { name: "Erling Haaland", position: "FWD", team: "Manchester City", rating: 8.9, goals: 42, assists: 8, matches: 40, speed: 89, avatar: "src/licensed-image.jpg" },
+      { name: "Kevin De Bruyne", position: "MID", team: "Manchester City", rating: 8.7, goals: 12, assists: 25, matches: 35, speed: 78, avatar: "src/licensed-image.jpg" },
+      { name: "Virgil van Dijk", position: "DEF", team: "Liverpool", rating: 8.5, goals: 4, assists: 3, matches: 36, speed: 82, avatar: "src/licensed-image.jpg" },
+      { name: "Alisson Becker", position: "GK", team: "Liverpool", rating: 8.4, goals: 0, assists: 1, matches: 34, speed: 65, avatar: "src/licensed-image.jpg" },
+      { name: "Luka Modrić", position: "MID", team: "Real Madrid", rating: 8.3, goals: 6, assists: 18, matches: 33, speed: 75, avatar: "src/licensed-image.jpg" },
+      { name: "Robert Lewandowski", position: "FWD", team: "Barcelona", rating: 8.6, goals: 31, assists: 9, matches: 37, speed: 79, avatar: "src/licensed-image.jpg" },
+      { name: "Karim Benzema", position: "FWD", team: "Al-Ittihad", rating: 8.2, goals: 24, assists: 11, matches: 29, speed: 80, avatar: "src/licensed-image.jpg" },
+      { name: "N'Golo Kanté", position: "MID", team: "Al-Ittihad", rating: 8.1, goals: 3, assists: 7, matches: 28, speed: 84, avatar: "src/licensed-image.jpg" },
+      { name: "Sergio Ramos", position: "DEF", team: "PSG", rating: 7.9, goals: 5, assists: 2, matches: 31, speed: 72, avatar: "src/licensed-image.jpg" },
+      { name: "Thibaut Courtois", position: "GK", team: "Real Madrid", rating: 8.3, goals: 0, assists: 0, matches: 32, speed: 68, avatar: "src/licensed-image.jpg" }
+    ];
+
+    // ==== Helpers ====
+    function createPlayerCard(player) {
+      const avatar = player.avatar
+        ? `<img src="${player.avatar}" alt="${player.name}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`
+        : `<span>${player.name.split(' ').map(n => n[0]).join('')}</span>`;
+      return `
+        <div class="player-card" data-position="${player.position}">
+          <div class="card-header"><div class="player-avatar">${avatar}</div></div>
+          <div class="card-body">
+            <h3 class="player-name">${player.name}</h3>
+            <span class="player-position">${player.position}</span>
+            <div class="player-stats">
+              <div class="stat"><div class="stat-value">${player.goals}</div><div class="stat-name">Goals</div></div>
+              <div class="stat"><div class="stat-value">${player.assists}</div><div class="stat-name">Assists</div></div>
+              <div class="stat"><div class="stat-value">${player.matches}</div><div class="stat-name">Matches</div></div>
+              <div class="stat"><div class="stat-value">${player.speed}</div><div class="stat-name">Speed</div></div>
+            </div>
+            <div class="player-info">
+              <span class="team">${player.team}</span>
+              <div class="rating"><span>⭐</span><span class="rating-value">${player.rating}</span></div>
+            </div>
+          </div>
+        </div>`;
+    }
+    function renderPlayers(list = players) {
+      document.getElementById('playersGrid').innerHTML = list.map(createPlayerCard).join('');
+    }
+    function filterPlayers(position) {
+      renderPlayers(position === 'all' ? players : players.filter(p => p.position === position));
+    }
+    function searchPlayers(query) {
+      const filtered = players.filter(player =>
+        player.name.toLowerCase().includes(query.toLowerCase()) ||
+        player.team.toLowerCase().includes(query.toLowerCase()) ||
+        player.position.toLowerCase().includes(query.toLowerCase())
+      );
+      renderPlayers(filtered);
+    }
+
+    // Toast
+    const toastEl = document.getElementById('toast');
+    function showToast(message, timeout = 3000) {
+      toastEl.innerHTML = message;
+      toastEl.classList.add('show');
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => toastEl.classList.remove('show'), timeout);
+    }
+
+    // Particles
+    function createParticles() {
+      const container = document.getElementById('particles');
+      for (let i = 0; i < 20; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 6 + 's';
+        particle.style.animationDuration = (Math.random() * 3 + 4) + 's';
+        container.appendChild(particle);
+      }
+    }
+
+    // Auth UI guard
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+
+    function updateUIByAuth(){
+      if (isLoggedIn) {
+        searchInput.removeAttribute('disabled');
+        searchBtn.removeAttribute('disabled');
+      } else {
+        searchInput.value = '';
+        searchInput.setAttribute('disabled', 'true');
+        searchBtn.setAttribute('disabled', 'true');
+      }
+    }
+
+    function requireLogin(){
+      if (!isLoggedIn) {
+        showToast('Vui lòng <a href="signin.html">đăng nhập</a> để sử dụng tính năng tìm kiếm.');
+        return false;
+      }
+      return true;
+    }
+
+    // Events
+    document.addEventListener('DOMContentLoaded', () => {
+      renderPlayers();
+      createParticles();
+      updateUIByAuth();
+    });
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        filterPlayers(e.target.dataset.position);
+      });
+    });
+
+    // Chặn gõ nếu chưa login (trường hợp người dùng tự bỏ disabled)
+    searchInput.addEventListener('beforeinput', (e) => {
+      if (!isLoggedIn) { e.preventDefault(); showToast('Bạn cần <a href="signin.html">đăng nhập</a> để gõ từ khóa tìm kiếm.'); }
+    });
+
+    // Nút Search: luôn hiện toast; nếu chưa login -> chỉ hiện hướng dẫn + link
+    searchBtn.addEventListener('click', () => {
+      if (!requireLogin()) return;
+      const q = searchInput.value.trim();
+      showToast(q ? `Đang tìm: "${q}"` : 'Hãy nhập từ khóa để tìm kiếm.');
+      if (q) searchPlayers(q);
+    });
+
+    // Tìm kiếm trực tiếp khi đã đăng nhập
+    searchInput.addEventListener('input', (e) => {
+      if (!requireLogin()) return;
+      searchPlayers(e.target.value);
+    });
+
+    // Click animation
+    document.addEventListener('click', (e) => {
+      const card = e.target.closest('.player-card');
+      if (card) { card.style.transform = 'scale(0.98)'; setTimeout(() => { card.style.transform = ''; }, 150); }
+    });
+  </script>
+</body>
+</html> -->
+//

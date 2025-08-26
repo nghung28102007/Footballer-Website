@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FootballPro • Dashboard</title>
+
+  <!-- Google Font: Roboto -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;800&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root{
+      --bg1:#052e1a; --bg2:#0b3f24; --bg3:#0f5130;
+      --panel:rgba(6,78,59,.45);
+      --line:rgba(16,185,129,.22);
+      --line-strong:rgba(16,185,129,.35);
+      --fg:#ecfdf5; --muted:#a7f3d0;
+      --glass:rgba(6,78,59,.55);
+      --pri1:#22c55e; --pri2:#16a34a; --priB:#34d399;
+      --ink:#052e1a;
+      --panel-2:#063a2b;
+      --shadow:rgba(0,0,0,.4);
+      --chip-bg:rgba(6,78,59,.55);
+      --chip-border:rgba(16,185,129,.28);
+      --card-top-1:#064e3b; --card-top-2:#065f46;
+      --search-bg:#1b3b32;
+    }
+    [data-theme="light"]{
+      --bg1:#e8fff4; --bg2:#e6fff2; --bg3:#e2ffee;
+      --panel:#ffffff; --panel-2:#f5fff9;
+      --line:#d2f5e6; --line-strong:#b8eedb;
+      --fg:#062e22; --muted:#256d57; --glass:#ffffff;
+      --pri1:#16a34a; --pri2:#22c55e; --priB:#059669;
+      --ink:#ffffff; --shadow:rgba(0,0,0,.1);
+      --chip-bg:#f0fff8; --chip-border:#b8eedb;
+      --card-top-1:#ccf7e6; --card-top-2:#d8faee;
+      --search-bg:#f1fff8;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body,input,button,select,textarea{font-family:'Roboto',sans-serif}
+    body{background:linear-gradient(135deg,var(--bg1),var(--bg2) 50%,var(--bg3));color:var(--fg);min-height:100vh;overflow-x:hidden; padding-bottom:78px;}
+
+    .header{position:sticky;top:0;z-index:100;background:rgba(3,31,20,.65);backdrop-filter:blur(14px);border-bottom:1px solid var(--line-strong)}
+    [data-theme="light"] .header{background:rgba(255,255,255,.7)}
+    .header-content{max-width:1200px;margin:0 auto;padding:12px 16px;display:flex;gap:12px;align-items:center;justify-content:space-between}
+    .logo{font-weight:800;font-size:20px;background:linear-gradient(135deg,var(--pri1),#4ade80);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+
+    .searchbar{position:relative;display:flex;gap:8px;align-items:center;flex:1;max-width:640px}
+    .searchbar input{flex:1;padding:.8rem 1rem .8rem 2.3rem;background:var(--search-bg);border:1px solid var(--line-strong);border-radius:14px;color:var(--fg);transition:.2s}
+    .searchbar input:focus{outline:none;border-color:var(--priB);box-shadow:0 0 0 3px rgba(52,211,153,.15)}
+    .searchbar .icon{position:absolute;left:.8rem;opacity:.8}
+    .btn{padding:.65rem 1rem;border-radius:12px;border:1px solid var(--line-strong);background:linear-gradient(135deg,var(--pri1),var(--pri2));color:var(--ink);font-weight:800;cursor:pointer;transition:.18s}
+    .btn:hover{filter:brightness(1.05)}
+    .btn-ghost{background:var(--panel-2);color:var(--fg)}
+
+    .ac{position:absolute;top:110%;left:0;right:0;background:var(--panel);border:1px solid var(--line-strong);border-radius:10px;box-shadow:0 18px 40px var(--shadow);display:none;max-height:240px;overflow:auto;z-index:30}
+    .ac.show{display:block}
+    .ac-item{padding:10px 12px;display:flex;gap:10px;align-items:center;cursor:pointer;border-bottom:1px solid var(--line)}
+    .ac-item:last-child{border-bottom:none}
+    .ac-item:hover{background:var(--panel-2)}
+    .ac-pos{font-size:12px;opacity:.8}
+
+    .auth-area{display:flex;align-items:center;gap:10px}
+    .auth-link{padding:.5rem .85rem;border-radius:12px;border:1px solid var(--chip-border);background:var(--chip-bg);color:var(--fg);text-decoration:none;font-weight:800}
+    .auth-link:hover{border-color:var(--priB)}
+    .avatar-wrapper{position:relative}
+    .avatar-btn{display:flex;align-items:center;gap:10px;background:transparent;border:none;color:var(--fg);cursor:pointer}
+    .avatar{width:36px;height:36px;border-radius:999px;display:grid;place-items:center;font-weight:900;overflow:hidden;background:linear-gradient(135deg,var(--pri1),var(--pri2))}
+    .avatar img{width:100%;height:100%;object-fit:cover}
+    .avatar-initials{font-size:.95rem}
+    .user-name{font-weight:800;max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .menu{position:absolute;right:0;top:calc(100% + 8px);min-width:200px;background:var(--panel);border:1px solid var(--line-strong);border-radius:14px;box-shadow:0 16px 36px var(--shadow);display:none}
+    .menu.show{display:block}
+    .menu a,.menu button{display:flex;width:100%;gap:8px;align-items:center;padding:11px 14px;color:var(--fg);background:transparent;border:none;text-decoration:none;cursor:pointer;font-weight:700}
+    .menu a:hover,.menu button:hover{background:var(--panel-2)}
+
+    .toolbar{max-width:1200px;margin:0 auto;padding:12px 16px 0;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+    .filters{display:flex;flex-wrap:wrap;gap:8px}
+    .chip{padding:.5rem .9rem;border-radius:999px;background:var(--chip-bg);border:1px solid var(--chip-border);cursor:pointer;font-weight:800;color:var(--fg)}
+    .chip[aria-pressed="true"],.chip:hover{background:linear-gradient(135deg,var(--pri1),var(--pri2));color:var(--ink);border-color:transparent}
+    .right-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .select{appearance:none;padding:.55rem .8rem;border-radius:10px;background:var(--panel-2);border:1px solid var(--line-strong);color:var(--fg);font-weight:700;cursor:pointer}
+    .order-btn{padding:.55rem .8rem;border-radius:10px;background:var(--panel-2);border:1px solid var(--line-strong);color:var(--fg);font-weight:800;cursor:pointer}
+
+    .page{max-width:1200px;margin:0 auto;padding:16px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden;transition:.2s;backdrop-filter:blur(10px);position:relative}
+    .card:hover{transform:translateY(-4px);box-shadow:0 20px 40px var(--shadow);border-color:var(--line-strong)}
+    .card .top{height:160px;background:linear-gradient(135deg,var(--card-top-1),var(--card-top-2));display:flex;align-items:center;justify-content:center;position:relative}
+    .avatar-lg{width:74px;height:74px;border-radius:50%;background:linear-gradient(135deg,var(--pri1),var(--pri2));display:grid;place-items:center;font-weight:900}
+    .avatar-lg img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+    .fav{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.25);backdrop-filter:blur(6px);border:1px solid var(--line-strong);border-radius:999px;padding:6px;cursor:pointer}
+    .fav.active{background:linear-gradient(135deg,#fde68a,#f59e0b);color:#111827}
+    .card .body{padding:12px}
+    .name{font-weight:900}
+
+    /* POS pill */
+    .pos{
+      display:inline-block;margin:6px 0 8px;padding:.25rem .6rem;border-radius:999px;
+      background:linear-gradient(135deg,var(--pri1),var(--pri2));color:var(--ink);
+      font-size:.74rem;font-weight:900;white-space:nowrap;width:fit-content
+    }
+
+    /* Stats: 2×2 */
+    .stats{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin:16px 0; align-items:stretch; }
+    .stat{
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      padding:16px 12px; min-height:92px; border-radius:14px;
+      background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
+      border:1px solid var(--line-strong); text-align:center; min-width:0;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.02);
+    }
+    .stat .val{color:var(--priB);font-weight:900;font-size:22px;line-height:1;margin-bottom:6px}
+    .stat .lbl{font-size:13px;line-height:1.1;opacity:.9;white-space:nowrap}
+
+    .meta{display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:1px solid var(--line)}
+    .team{color:var(--muted);font-size:.92rem}
+    .rating{display:flex;gap:6px;align-items:center;font-weight:900}
+    .rating .val{color:#fde68a}
+
+    .pagination{display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:16px}
+    .page-btn{min-width:34px;padding:.45rem .65rem;border-radius:10px;background:var(--panel-2);border:1px solid var(--line-strong);color:var(--fg);font-weight:800;cursor:pointer}
+    .page-btn[disabled]{opacity:.5;cursor:not-allowed}
+    .page-btn.active{background:linear-gradient(135deg,var(--pri1),var(--pri2));color:var(--ink);border-color:transparent}
+
+    .floating-particles{position:fixed;inset:0;pointer-events:none;z-index:-1}
+    .particle{position:absolute;width:4px;height:4px;background:rgba(52,211,153,.35);border-radius:50%;animation:float 6s infinite linear}
+    @keyframes float{0%{transform:translateY(100vh) rotate(0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-100px) rotate(360deg);opacity:0}}
+
+    .toast{position:fixed;right:16px;top:16px;padding:10px 12px;border-radius:12px;background:var(--panel);border:1px solid var(--line-strong);color:var(--fg);box-shadow:0 14px 36px var(--shadow);display:flex;gap:10px;align-items:center;transform:translateY(-12px);opacity:0;pointer-events:none;transition:.2s;z-index:9999}
+    .toast.show{transform:translateY(0);opacity:1;pointer-events:auto}
+    .toast__cta{padding:.45rem .8rem;border-radius:9px;border:1px solid var(--line-strong);background:linear-gradient(135deg,var(--pri1),var(--pri2));color:var(--ink);text-decoration:none;font-weight:900}
+    .toast__close{background:transparent;border:none;color:var(--muted);cursor:pointer;font-weight:900}
+
+    /* Uniform card height */
+    .card{min-height:420px;display:flex;flex-direction:column}
+    .card .body{display:flex;flex-direction:column;gap:10px;flex:1}
+    .card .body .name{line-height:1.3;font-weight:900;min-height:2.6em;display:block}
+    .meta{margin-top:auto}
+
+    /* Footer */
+    .footer{
+      position:fixed;left:0;right:0;bottom:0;
+      border-top:1px solid var(--line-strong);
+      background:rgba(3,31,20,.85);
+      backdrop-filter:blur(14px);
+      z-index:1000;color:var(--fg);
+    }
+    [data-theme="light"] .footer{background:rgba(255,255,255,.85)}
+    .footer-inner-row{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 16px;}
+    .f-left{display:flex;align-items:center;gap:8px;font-weight:800}
+    .brand-mark{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:linear-gradient(135deg,var(--pri1),var(--pri2));color:var(--ink);font-weight:900}
+    .brand-name{background:linear-gradient(135deg,var(--pri1),#4ade80);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-weight:900}
+    .f-right{display:flex;align-items:center;gap:8px}
+    .soc{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--panel-2);border:1px solid var(--line-strong);color:var(--fg);text-decoration:none}
+    .soc:hover{background:linear-gradient(135deg,var(--pri1),var(--pri2));color:var(--ink);border-color:transparent}
+    .back-top{display:inline-flex;align-items:center;gap:6px;padding:.4rem .7rem;border-radius:10px;background:var(--panel-2);border:1px solid var(--line-strong);color:var(--fg);font-weight:800;text-decoration:none}
+    .back-top:hover{background:linear-gradient(135deg,var(--pri1),var(--pri2));color:var(--ink);border-color:transparent}
+    .footer-login{padding:.4rem .7rem;border-radius:10px;border:1px solid var(--chip-border);background:var(--chip-bg);color:var(--fg);text-decoration:none;font-weight:800}
+    .footer-login:hover{border-color:var(--priB)}
+
+    @media (max-width:768px){
+      .header-content{flex-direction:column;align-items:stretch}
+      .searchbar{max-width:none}
+      .brand-name{display:none}
+      .user-name{max-width:120px}
+    }
+  </style>
+</head>
+<body>
+  <!-- Particles -->
+  <div id="particles" class="floating-particles"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="logo">⚽ FootballPro</div>
+
+      <div class="searchbar">
+        <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+        <input id="searchInput" type="text" placeholder="Search players (name/team/position)"/>
+        <button id="searchBtn" class="btn">Search</button>
+        <div id="acList" class="ac" role="listbox" aria-label="Gợi ý tìm kiếm"></div>
+      </div>
+
+      <div class="auth-area" id="authArea">
+        <a href="signin.html" id="loginLink" class="auth-link">Đăng nhập</a>
+        <div class="avatar-wrapper" id="avatarWrap" style="display:none">
+          <button class="avatar-btn" id="avatarBtn" aria-haspopup="true" aria-expanded="false">
+            <div class="avatar" id="avatar"><span class="avatar-initials">U</span></div>
+            <span id="userNameText" class="user-name" style="display:none"></span>
+          </button>
+          <div class="menu" id="userMenu" role="menu" aria-label="User menu">
+            <button id="themeToggle" class="toggle" role="menuitem">🌗 Dark / Light</button>
+            <button id="logoutBtn" role="menuitem">🚪 Đăng xuất</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="filters" role="group" aria-label="Bộ lọc vị trí">
+      <button class="chip" data-position="all" aria-pressed="true">Tất cả</button>
+      <button class="chip" data-position="Favorites">❤️ Favorites</button>
+      <button class="chip" data-position="GK">GK</button>
+      <button class="chip" data-position="DEF">DEF</button>
+      <button class="chip" data-position="MID">MID</button>
+      <button class="chip" data-position="FWD">FWD</button>
+    </div>
+
+    <div class="right-tools">
+      <label>Sort</label>
+      <select id="sortKey" class="select" title="Tiêu chí sắp xếp">
+        <option value="rating">Rating</option>
+        <option value="goals">Goals</option>
+        <option value="assists">Assists</option>
+        <option value="matches">Matches</option>
+        <option value="speed">Speed</option>
+        <option value="name">Name</option>
+        <option value="team">Team</option>
+        <option value="position">Position</option>
+      </select>
+      <button id="sortDir" class="order-btn">⬍ ASC</button>
+
+      <label>Per page</label>
+      <select id="perPage" class="select">
+        <option value="8">8</option>
+        <option value="12" selected>12</option>
+        <option value="16">16</option>
+        <option value="24">24</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <main class="page">
+    <section id="playersGrid" class="grid" aria-live="polite"></section>
+    <nav id="pagination" class="pagination" aria-label="Phân trang"></nav>
+  </main>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true">
+    <span id="toastMsg">Bạn cần đăng nhập để sử dụng tính năng tìm kiếm.</span>
+    <a id="toastCta" class="toast__cta" href="signin.html">Đăng nhập</a>
+    <button id="toastClose" class="toast__close" aria-label="Đóng">×</button>
+  </div>
+
+  <!-- Footer fixed -->
+  <footer class="footer">
+    <div class="footer-inner-row">
+      <div class="f-left">
+        <span class="brand-mark">FP</span>
+        <span class="brand-name">FootballPro</span>
+        <span class="sep">•</span>
+        <span>© <span id="y"></span></span>
+      </div>
+      <div class="f-right" id="footerLinks">
+        <a href="signin.html" id="footerLoginBtn" class="footer-login">Đăng nhập</a>
+        <a class="soc" href="#" aria-label="Facebook" title="Facebook">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7h-2.6V12h2.6V9.8c0-2.6 1.6-4 3.9-4 1.1 0 2.2.2 2.2.2v2.4h-1.2c-1.2 0-1.6.7-1.6 1.5V12h2.8l-.4 2.9h-2.4v7A10 10 0 0 0 22 12z"/></svg>
+        </a>
+        <a class="soc" href="#" aria-label="GitHub" title="GitHub">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.8c-2.9 .6-3.5-1.2-3.5-1.2-.4-1-1-1.2-1-1.2-.8-.5.1-.5.1-.5 1 .1 1.5 1 1.5 1 .9 1.5 2.4 1 3 .7.1-.6.4-1 .7-1.3-2.3-.3-4.7-1.1-4.7-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.6 0 0 .9-.3 2.8 1a9.6 9.6 0 0 1 5.1 0c1.9-1.3 2.8-1 2.8-1 .5 1.3.2 2.3.1 2.6.6.7 1 1.6 1 2.7 0 3.8-2.4 4.7-4.7 5 .4.3.8 1 .8 2v3c0 .3.2.6.7.5A10 10 0 0 0 12 2z"/></svg>
+        </a>
+        <a class="back-top" href="#" id="backTop2" aria-label="Lên đầu trang">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5l7 7-1.4 1.4L13 10.8V19h-2v-8.2l-4.6 4.6L5 12l7-7z"/></svg>
+          Top
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ===== Demo data =====
+    const players = [
+      {name:"Lionel Messi",position:"FWD",team:"Inter Miami",rating:9.2,goals:28,assists:15,matches:32,speed:85,avatar:""},
+      {name:"Kylian Mbappé",position:"FWD",team:"Real Madrid",rating:9.0,goals:35,assists:12,matches:38,speed:98,avatar:""},
+      {name:"Erling Haaland",position:"FWD",team:"Manchester City",rating:8.9,goals:42,assists:8,matches:40,speed:89,avatar:""},
+      {name:"Kevin De Bruyne",position:"MID",team:"Manchester City",rating:8.7,goals:12,assists:25,matches:35,speed:78,avatar:""},
+      {name:"Virgil van Dijk",position:"DEF",team:"Liverpool",rating:8.5,goals:4,assists:3,matches:36,speed:82,avatar:""},
+      {name:"Alisson Becker",position:"GK",team:"Liverpool",rating:8.4,goals:0,assists:1,matches:34,speed:65,avatar:""},
+      {name:"Luka Modrić",position:"MID",team:"Real Madrid",rating:8.3,goals:6,assists:18,matches:33,speed:75,avatar:""},
+      {name:"Robert Lewandowski",position:"FWD",team:"Barcelona",rating:8.6,goals:31,assists:9,matches:37,speed:79,avatar:""},
+      {name:"Karim Benzema",position:"FWD",team:"Al-Ittihad",rating:8.2,goals:24,assists:11,matches:29,speed:80,avatar:""},
+      {name:"N'Golo Kanté",position:"MID",team:"Al-Ittihad",rating:8.1,goals:3,assists:7,matches:28,speed:84,avatar:""},
+      {name:"Sergio Ramos",position:"DEF",team:"PSG",rating:7.9,goals:5,assists:2,matches:31,speed:72,avatar:""},
+      {name:"Thibaut Courtois",position:"GK",team:"Real Madrid",rating:8.3,goals:0,assists:0,matches:32,speed:68,avatar:""},
+      {name:"Bukayo Saka",position:"FWD",team:"Arsenal",rating:8.2,goals:17,assists:12,matches:36,speed:90,avatar:""},
+      {name:"Jude Bellingham",position:"MID",team:"Real Madrid",rating:8.8,goals:23,assists:10,matches:39,speed:86,avatar:""},
+      {name:"Mohamed Salah",position:"FWD",team:"Liverpool",rating:8.7,goals:27,assists:11,matches:38,speed:91,avatar:""},
+      {name:"Declan Rice",position:"MID",team:"Arsenal",rating:8.1,goals:6,assists:8,matches:37,speed:83,avatar:""},
+      {name:"Antoine Griezmann",position:"FWD",team:"Atletico Madrid",rating:8.4,goals:22,assists:9,matches:37,speed:82,avatar:""},
+      {name:"Marc-André ter Stegen",position:"GK",team:"Barcelona",rating:8.5,goals:0,assists:1,matches:34,speed:61,avatar:""},
+      {name:"Ruben Dias",position:"DEF",team:"Manchester City",rating:8.3,goals:2,assists:3,matches:35,speed:76,avatar:""},
+      {name:"Jamal Musiala",position:"MID",team:"Bayern Munich",rating:8.4,goals:16,assists:12,matches:34,speed:89,avatar:""}
+    ];
+
+    const $ = s => document.querySelector(s);
+    const $$ = s => [...document.querySelectorAll(s)];
+    const grid = $('#playersGrid');
+    const pager = $('#pagination');
+    const acList = $('#acList');
+
+    // ===== Toast =====
+    const toast = $('#toast'), toastMsg = $('#toastMsg'), toastCta = $('#toastCta'), toastClose = $('#toastClose');
+    function showToast(msg='Bạn cần đăng nhập để sử dụng tính năng tìm kiếm.', cta='Đăng nhập', href='signin.html', ms=4000){
+      toastMsg.textContent = msg; toastCta.textContent = cta; toastCta.href = href;
+      toast.classList.add('show'); clearTimeout(showToast._t);
+      if(ms>0) showToast._t = setTimeout(()=> toast.classList.remove('show'), ms);
+    }
+    toastClose.addEventListener('click', ()=> toast.classList.remove('show'));
+
+    // ===== Auth & persistent keys =====
+    const LS = {
+      auth:'auth', userName:'userName', userEmail:'userEmail',
+      flt:'flt', qry:'qry', sortKey:'sortKey', sortDir:'sortDir',
+      perPage:'perPage', page:'page',
+      favByUser:'favoritesByUser', // <— map {userKey: [names]}
+      theme:'theme'
+    };
+
+    let isLoggedIn = localStorage.getItem(LS.auth) === '1';
+    const loginLink = $('#loginLink');
+    const avatarWrap = $('#avatarWrap');
+    const avatarEl = $('#avatar');
+    const userNameText = $('#userNameText');
+    const footerLoginBtn = $('#footerLoginBtn');
+
+    function getInitials(x){
+      if(!x) return 'U';
+      const base = (x.includes('@') ? x.split('@')[0] : x).trim();
+      const p = base.split(/\s+/);
+      return p.length===1 ? base.slice(0,2).toUpperCase() : (p[0][0]+p[p.length-1][0]).toUpperCase();
+    }
+    function userKey(){
+      const email = (localStorage.getItem(LS.userEmail)||'').trim().toLowerCase();
+      const name  = (localStorage.getItem(LS.userName)||'').trim().toLowerCase();
+      return email || name; // ưu tiên email
+    }
+    function loadFavSet(){
+      const map = JSON.parse(localStorage.getItem(LS.favByUser) || '{}');
+      const key = userKey();
+      if(!key) return new Set(); // chưa login
+      return new Set(Array.isArray(map[key]) ? map[key] : []);
+    }
+    function saveFavSet(set){
+      const key = userKey();
+      if(!key) return; // không lưu khi chưa login
+      const map = JSON.parse(localStorage.getItem(LS.favByUser) || '{}');
+      map[key] = [...set];
+      localStorage.setItem(LS.favByUser, JSON.stringify(map));
+    }
+
+    let favorites = isLoggedIn ? loadFavSet() : new Set();
+
+    function syncAuthUI(){
+      if(isLoggedIn){
+        loginLink.style.display='none';
+        avatarWrap.style.display='flex';
+        const nm = localStorage.getItem(LS.userName) || localStorage.getItem(LS.userEmail) || 'User';
+        avatarEl.innerHTML = `<span class="avatar-initials">${getInitials(nm)}</span>`;
+        userNameText.textContent = nm;
+        userNameText.style.display = 'inline';
+        if(footerLoginBtn) footerLoginBtn.style.display = 'none';
+        favorites = loadFavSet(); // nạp lại fav theo tài khoản
+      }else{
+        avatarWrap.style.display='none';
+        loginLink.style.display='inline-flex';
+        userNameText.style.display = 'none';
+        if(footerLoginBtn) footerLoginBtn.style.display = 'inline-flex';
+        favorites = new Set(); // ẩn fav khi chưa login
+      }
+    }
+    syncAuthUI();
+
+    // Avatar menu
+    $('#avatarBtn')?.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      $('#userMenu').classList.toggle('show');
+    });
+    document.addEventListener('click', ()=> $('#userMenu')?.classList.remove('show'));
+    $('#logoutBtn')?.addEventListener('click', ()=>{
+      // KHÔNG xóa favoritesByUser -> giữ lại theo tài khoản
+      localStorage.removeItem(LS.auth);
+      localStorage.removeItem(LS.userName);
+      localStorage.removeItem(LS.userEmail);
+      isLoggedIn=false;
+      syncAuthUI(); currentQuery=''; $('#searchInput').value=''; rerender();
+    });
+
+    // Theme
+    function applyTheme(t){ document.documentElement.setAttribute('data-theme', t); }
+    const savedTheme = localStorage.getItem(LS.theme) || 'dark';
+    applyTheme(savedTheme);
+    $('#themeToggle')?.addEventListener('click', ()=>{
+      const t = (document.documentElement.getAttribute('data-theme')==='dark') ? 'light' : 'dark';
+      localStorage.setItem(LS.theme, t); applyTheme(t);
+    });
+
+    // Particles
+    (function particles(){
+      const c = $('#particles');
+      for(let i=0;i<26;i++){
+        const d=document.createElement('div');
+        d.className='particle';
+        d.style.left=Math.random()*100+'%';
+        d.style.animationDelay=Math.random()*6+'s';
+        d.style.animationDuration=(Math.random()*3+4)+'s';
+        c.appendChild(d);
+      }
+    })();
+
+    // ===== UI State =====
+    let currentFilter = localStorage.getItem(LS.flt) || 'all';
+    let currentQuery  = localStorage.getItem(LS.qry) || '';
+    let sortKey       = localStorage.getItem(LS.sortKey) || 'rating';
+    let sortDir       = localStorage.getItem(LS.sortDir) || 'asc';
+    let itemsPerPage  = parseInt(localStorage.getItem(LS.perPage) || '12', 10);
+    let currentPage   = parseInt(localStorage.getItem(LS.page) || '1', 10);
+
+    // Apply saved controls
+    $('#searchInput').value = currentQuery;
+    $('#sortKey').value = sortKey;
+    $('#sortDir').textContent = (sortDir==='asc'?'⬍ ASC':'⬍ DESC');
+    $('#perPage').value = itemsPerPage;
+    $$('.chip').forEach(c=>{
+      c.setAttribute('aria-pressed', String(c.dataset.position===currentFilter));
+    });
+
+    // ===== Helpers =====
+    function requireLogin(msg='Bạn cần đăng nhập để sử dụng tính năng này.'){
+      if(!isLoggedIn){
+        showToast(msg,'Đăng nhập','signin.html',5000);
+        return false;
+      }
+      return true;
+    }
+
+    // ===== Data ops =====
+    function baseFilter(){
+      let list = [...players];
+      if(currentFilter==='Favorites'){
+        if(!isLoggedIn){
+          showToast('Đăng nhập để xem danh sách yêu thích.','Đăng nhập','signin.html',5000);
+          list = []; // không hiển thị gì khi chưa login
+        }else{
+          list = list.filter(p => favorites.has(p.name));
+        }
+      } else if(currentFilter!=='all'){
+        list = list.filter(p => p.position === currentFilter);
+      }
+      if(isLoggedIn && currentQuery.trim()){
+        const s = currentQuery.toLowerCase();
+        list = list.filter(p =>
+          p.name.toLowerCase().includes(s) ||
+          p.team.toLowerCase().includes(s) ||
+          p.position.toLowerCase().includes(s)
+        );
+      }
+      return list;
+    }
+    function sortList(list){
+      const dir = (sortDir==='asc') ? 1 : -1;
+      return [...list].sort((a,b)=>{
+        let va = a[sortKey], vb = b[sortKey];
+        if(typeof va==='string') va=va.toLowerCase();
+        if(typeof vb==='string') vb=vb.toLowerCase();
+        if(va<vb) return -1*dir;
+        if(va>vb) return  1*dir;
+        return 0;
+      });
+    }
+    function paginate(list){
+      const total = list.length;
+      const totalPages = Math.max(1, Math.ceil(total/itemsPerPage));
+      currentPage = Math.min(currentPage, totalPages);
+      const start = (currentPage-1)*itemsPerPage;
+      return { items: list.slice(start, start+itemsPerPage), totalPages };
+    }
+
+    // ===== Render =====
+    function avatarContent(name, avatar){
+      if(avatar){ return `<img loading="lazy" src="${avatar}" alt="${name}"/>`; }
+      return `<span class="avatar-initials">${name.split(' ').map(n=>n[0]).join('')}</span>`;
+    }
+    function card(p){
+      const isFav = favorites.has(p.name);
+      return `
+        <article class="card" data-name="${p.name}">
+          <div class="top">
+            <div class="avatar-lg">${avatarContent(p.name, p.avatar)}</div>
+            <button class="fav ${isFav?'active':''}" title="Yêu thích" data-fav="${p.name}" aria-pressed="${isFav}">❤️</button>
+          </div>
+          <div class="body">
+            <div class="name">${p.name}</div>
+            <span class="pos">${p.position}</span>
+            <div class="stats">
+              <div class="stat"><div class="val">${p.goals}</div><div class="lbl">Goals</div></div>
+              <div class="stat"><div class="val">${p.assists}</div><div class="lbl">Assists</div></div>
+              <div class="stat"><div class="val">${p.matches}</div><div class="lbl">Matches</div></div>
+              <div class="stat"><div class="val">${p.speed}</div><div class="lbl">Speed</div></div>
+            </div>
+            <div class="meta">
+              <span class="team">${p.team}</span>
+              <div class="rating">⭐ <span class="val">${p.rating}</span></div>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+    function renderGrid(rows){
+      if(!rows.length){
+        grid.innerHTML = `<div style="opacity:.8;padding:20px;text-align:center;border:1px dashed var(--line);border-radius:12px">Không có kết quả phù hợp.</div>`;
+        pager.innerHTML = '';
+        return;
+      }
+      grid.innerHTML = rows.map(card).join('');
+      // Fav click (yêu cầu đăng nhập)
+      grid.querySelectorAll('.fav').forEach(btn=>{
+        btn.addEventListener('click', (e)=>{
+          e.stopPropagation();
+          if(!requireLogin('Đăng nhập để lưu cầu thủ yêu thích vào tài khoản của bạn.')) return;
+          const name = btn.dataset.fav;
+          const nowFav = !favorites.has(name);
+          if(nowFav) favorites.add(name); else favorites.delete(name);
+          saveFavSet(favorites);
+          btn.classList.toggle('active', nowFav);
+          btn.setAttribute('aria-pressed', String(nowFav));
+          if(currentFilter==='Favorites'){ rerender(); }
+        });
+      });
+      grid.querySelectorAll('.card').forEach(c=>{
+        c.addEventListener('click', ()=>{
+          c.style.transform='scale(.985)';
+          setTimeout(()=> c.style.transform='', 140);
+        });
+      });
+    }
+    function renderPager(totalPages){
+      let html = `<button class="page-btn" ${currentPage===1?'disabled':''} data-act="prev">«</button>`;
+      const max=7;
+      let st=Math.max(1, currentPage-Math.floor(max/2));
+      let en=Math.min(totalPages, st+max-1);
+      if(en-st+1<max){ st=Math.max(1, en-max+1); }
+      for(let i=st;i<=en;i++){
+        html += `<button class="page-btn ${i===currentPage?'active':''}" data-page="${i}">${i}</button>`;
+      }
+      html += `<button class="page-btn" ${currentPage===totalPages?'disabled':''} data-act="next">»</button>`;
+      pager.innerHTML = html;
+
+      pager.querySelectorAll('.page-btn').forEach(b=>{
+        const act=b.getAttribute('data-act'), pg=b.getAttribute('data-page');
+        b.addEventListener('click', ()=>{
+          if(act==='prev' && currentPage>1){ currentPage--; rerender(); return; }
+          if(act==='next'){ currentPage++; rerender(); return; }
+          if(pg){ currentPage=parseInt(pg,10); rerender(); }
+        });
+      });
+    }
+    function rerender(){
+      const filtered = baseFilter();
+      const sorted   = sortList(filtered);
+      const {items, totalPages} = paginate(sorted);
+      renderGrid(items);
+      renderPager(totalPages);
+      // persist UI state (không lưu fav ở đây)
+      localStorage.setItem(LS.flt, currentFilter);
+      localStorage.setItem(LS.qry, currentQuery);
+      localStorage.setItem(LS.sortKey, sortKey);
+      localStorage.setItem(LS.sortDir, sortDir);
+      localStorage.setItem(LS.perPage, itemsPerPage);
+      localStorage.setItem(LS.page, currentPage);
+    }
+    rerender();
+
+    // ===== Filters (Favorites cần login) =====
+    $$('.chip').forEach(ch=>{
+      ch.addEventListener('click', ()=>{
+        const pos = ch.dataset.position || 'all';
+        if(pos==='Favorites' && !isLoggedIn){
+          showToast('Đăng nhập để dùng bộ lọc Favorites.','Đăng nhập','signin.html',5000);
+          return;
+        }
+        $$('.chip').forEach(_=>_.setAttribute('aria-pressed','false'));
+        ch.setAttribute('aria-pressed','true');
+        currentFilter = pos;
+        currentPage = 1;
+        rerender();
+      });
+    });
+
+    // ===== Sort & perPage =====
+    $('#sortKey').addEventListener('change', e=>{
+      sortKey = e.target.value; currentPage=1; rerender();
+    });
+    const sortDirBtn = $('#sortDir');
+    sortDirBtn.addEventListener('click', ()=>{
+      sortDir = (sortDir==='asc'?'desc':'asc');
+      sortDirBtn.textContent = (sortDir==='asc'?'⬍ ASC':'⬍ DESC');
+      currentPage=1; rerender();
+    });
+    $('#perPage').addEventListener('change', e=>{
+      itemsPerPage = parseInt(e.target.value,10) || 12;
+      currentPage=1; rerender();
+    });
+
+    // ===== Search gating =====
+    const searchInput = $('#searchInput');
+    const searchBtn   = $('#searchBtn');
+    function doSearch(){
+      if(!requireLogin('Bạn cần đăng nhập để sử dụng tính năng tìm kiếm.')) return;
+      currentQuery = searchInput.value.trim();
+      currentPage=1; rerender();
+    }
+    ['focus','click'].forEach(evt=>{
+      searchInput.addEventListener(evt, ()=>{ if(!isLoggedIn) showToast('Bạn cần đăng nhập để sử dụng tính năng tìm kiếm.','Đăng nhập','signin.html',5000); });
+    });
+    searchBtn.addEventListener('click', doSearch);
+    searchInput.addEventListener('keydown', e=>{ if(e.key==='Enter') doSearch(); });
+
+    // ===== Autocomplete =====
+    function renderAC(items){
+      if(!items.length){ acList.classList.remove('show'); acList.innerHTML=''; return; }
+      acList.innerHTML = items.slice(0,8).map(p=>`
+        <div class="ac-item" role="option" data-name="${p.name}">
+          <div class="avatar" style="width:28px;height:28px;font-size:.8rem">${getInitials(p.name)}</div>
+          <div>
+            <div>${p.name}</div>
+            <div class="ac-pos">${p.team} • ${p.position}</div>
+          </div>
+        </div>
+      `).join('');
+      acList.classList.add('show');
+      acList.querySelectorAll('.ac-item').forEach(it=>{
+        it.addEventListener('click', ()=>{
+          searchInput.value = it.dataset.name;
+          acList.classList.remove('show');
+          doSearch();
+        });
+      });
+    }
+    searchInput.addEventListener('input', e=>{
+      const q = e.target.value.trim().toLowerCase();
+      if(!q){ acList.classList.remove('show'); acList.innerHTML=''; return; }
+      if(!isLoggedIn){ showToast('Đăng nhập để dùng gợi ý tìm kiếm.','Đăng nhập','signin.html',4000); acList.classList.remove('show'); acList.innerHTML=''; return; }
+      const list = players.filter(p =>
+        p.name.toLowerCase().includes(q) ||
+        p.team.toLowerCase().includes(q) ||
+        p.position.toLowerCase().includes(q)
+      );
+      renderAC(list);
+    });
+    document.addEventListener('click', e=>{
+      if(!e.target.closest('.searchbar')){ acList.classList.remove('show'); }
+    });
+
+    // Footer helpers
+    document.getElementById('y').textContent = new Date().getFullYear();
+    function scrollTopSmooth(){ window.scrollTo({top:0, behavior:'smooth'}); }
+    document.getElementById('backTop2')?.addEventListener('click', (e)=>{ e.preventDefault(); scrollTopSmooth(); });
+  </script>
+</body>
+</html>
