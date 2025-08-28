@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Football Hub - Sign In</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{
+      font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+      background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#334155 100%);
+      min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative
+    }
+    .bg-shapes{position:absolute;inset:0;overflow:hidden;z-index:0}
+    .shape{position:absolute;border-radius:50%;background:linear-gradient(45deg,#22c55e,#16a34a);opacity:.1;animation:float 6s ease-in-out infinite}
+    .shape:nth-child(1){width:80px;height:80px;top:20%;left:10%}
+    .shape:nth-child(2){width:120px;height:120px;top:60%;right:15%;animation-delay:2s}
+    .shape:nth-child(3){width:60px;height:60px;bottom:20%;left:20%;animation-delay:4s}
+    @keyframes float{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-20px) rotate(180deg)}}
+
+    .container{
+      background:rgba(255,255,255,.05);backdrop-filter:blur(20px);
+      border:1px solid rgba(255,255,255,.1);border-radius:24px;
+      padding:48px;width:100%;max-width:420px;
+      box-shadow:0 25px 50px -12px rgba(0,0,0,.5);
+      position:relative;z-index:1;animation:slideUp .8s ease-out
+    }
+    @keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+
+    .logo{display:flex;align-items:center;justify-content:center;margin-bottom:32px}
+    .logo-icon{
+      width:48px;height:48px;background:linear-gradient(135deg,#22c55e,#16a34a);
+      border-radius:12px;display:flex;align-items:center;justify-content:center;margin-right:12px;
+      box-shadow:0 8px 32px rgba(34,197,94,.3)
+    }
+    .logo-text{color:#fff;font-size:24px;font-weight:700;letter-spacing:-.5px}
+
+    .welcome{text-align:center;margin-bottom:32px}
+    .welcome h1{color:#fff;font-size:28px;font-weight:700;margin-bottom:8px;letter-spacing:-.5px}
+    .welcome p{color:#94a3b8;font-size:16px}
+
+    .form-group{margin-bottom:24px}
+    .form-label{display:block;color:#e2e8f0;font-size:14px;font-weight:500;margin-bottom:8px;letter-spacing:.2px}
+    .form-input{
+      width:100%;padding:16px 20px;background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.1);border-radius:12px;color:#fff;font-size:16px;
+      transition:all .3s cubic-bezier(.4,0,.2,1);backdrop-filter:blur(10px)
+    }
+    .form-input:focus{outline:none;border-color:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.2);background:rgba(255,255,255,.08);transform:translateY(-2px)}
+    .form-input::placeholder{color:#64748b}
+    .password-group{position:relative}
+    .password-toggle{position:absolute;right:16px;top:50%;transform:translateY(-50%);background:none;border:none;color:#64748b;cursor:pointer;transition:color .3s}
+    .password-toggle:hover{color:#22c55e}
+    .forgot-password{text-align:right;margin-bottom:32px}
+    .forgot-password a{color:#22c55e;text-decoration:none;font-size:14px;font-weight:500}
+    .forgot-password a:hover{color:#16a34a}
+
+    .sign-in-btn{
+      width:100%;padding:16px;background:linear-gradient(135deg,#22c55e,#16a34a);
+      border:none;border-radius:12px;color:#fff;font-size:16px;font-weight:600;cursor:pointer;
+      transition:all .3s cubic-bezier(.4,0,.2,1);box-shadow:0 8px 32px rgba(34,197,94,.3);position:relative;overflow:hidden
+    }
+    .sign-in-btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);transition:left .5s}
+    .sign-in-btn:hover::before{left:100%}
+    .sign-in-btn:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(34,197,94,.4)}
+    .sign-in-btn:active{transform:translateY(0)}
+
+    .divider{display:flex;align-items:center;margin:32px 0}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.1)}
+    .divider span{color:#64748b;font-size:14px;margin:0 16px}
+    .social-buttons{display:flex;gap:12px;margin-bottom:32px}
+    .social-btn{
+      flex:1;padding:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+      border-radius:12px;color:#fff;text-decoration:none;display:flex;align-items:center;justify-content:center;
+      font-size:14px;font-weight:500;transition:all .3s cubic-bezier(.4,0,.2,1);backdrop-filter:blur(10px)
+    }
+    .social-btn:hover{background:rgba(255,255,255,.1);transform:translateY(-2px);box-shadow:0 8px 25px rgba(0,0,0,.2)}
+    .sign-up-link{text-align:center;color:#94a3b8;font-size:14px}
+    .sign-up-link a{color:#22c55e;text-decoration:none;font-weight:600}
+    .sign-up-link a:hover{color:#16a34a}
+    @media (max-width:480px){.container{padding:32px 24px;margin:16px}.welcome h1{font-size:24px}}
+
+    /* OTP Modal */
+    .modal{position:fixed;inset:0;background:rgba(15,23,42,.6);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:50}
+    .modal.show{display:flex}
+    .modal-card{
+      width:min(420px,92vw);background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:22px 20px;color:#e2e8f0
+    }
+    .modal-card h3{margin-bottom:8px;color:#fff}
+    .modal-card p{opacity:.85;margin-bottom:14px}
+    .otp-input{
+      letter-spacing:.35em;text-align:center;font-weight:800;
+      width:100%;padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,.18);
+      background:rgba(255,255,255,.08);color:#fff;font-size:20px
+    }
+    .otp-actions{display:flex;gap:8px;margin-top:14px}
+    .btn{padding:.75rem 1rem;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#fff;font-weight:700;cursor:pointer}
+    .btn.primary{background:linear-gradient(135deg,#22c55e,#16a34a);border:none}
+    .otp-error{color:#fecaca;margin-top:8px;min-height:1.2em;font-size:14px}
+  </style>
+</head>
+<body>
+  <div class="bg-shapes">
+    <div class="shape"></div><div class="shape"></div><div class="shape"></div>
+  </div>
+
+  <div class="container">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="11" stroke="white" stroke-width="2" fill="none"/>
+          <path d="M12 2v20M2 12h20" stroke="white" stroke-width="1"/>
+          <circle cx="12" cy="12" r="3" fill="white"/>
+        </svg>
+      </div>
+      <span class="logo-text">Football Hub</span>
+    </div>
+
+    <div class="welcome">
+      <h1>Welcome Back</h1>
+      <p>Sign in to access your football universe</p>
+    </div>
+
+    <form id="signInForm">
+      <div class="form-group">
+        <label class="form-label" for="email">Email Address</label>
+        <input type="email" id="email" class="form-input" placeholder="Enter your email" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <div class="password-group">
+          <input type="password" id="password" class="form-input" placeholder="Enter your password" required>
+          <button type="button" class="password-toggle" onclick="togglePassword()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="forgot-password">
+        <a href="#" onclick="showForgotPassword()">Forgot password?</a>
+      </div>
+
+      <button type="submit" class="sign-in-btn">Sign In</button>
+    </form>
+
+    <div class="divider"><span>Or continue with</span></div>
+
+    <div class="social-buttons">
+      <a href="#" class="social-btn" onclick="signInWithGoogle()">
+        <svg width="18" height="18" viewBox="0 0 24 24" style="margin-right:8px;">
+          <path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#fff" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#fff" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+          <path fill="#fff" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+        </svg>
+        Google
+      </a>
+    </div>
+
+    <div class="sign-up-link">
+      Don't have an account? <a href="signup.html">Sign up</a>
+    </div>
+  </div>
+
+  <!-- OTP Modal -->
+  <div id="otpModal" class="modal" aria-hidden="true">
+    <div class="modal-card">
+      <h3>Admin verification</h3>
+      <p>Enter the 6-digit code for admin.</p>
+      <input id="otpInput" class="otp-input" type="text" inputmode="numeric" maxlength="6" placeholder="••••••" autocomplete="one-time-code">
+      <div id="otpErr" class="otp-error"></div>
+      <div class="otp-actions">
+        <button id="otpCancel" class="btn" type="button">Cancel</button>
+        <button id="otpOk" class="btn primary" type="button">Verify</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-auth-compat.min.js"></script>
+
+  <script>
+    // ---------- Firebase init ----------
+    const firebaseConfig = {
+      apiKey: "AIzaSyB9dGMHwmPlwW4cMuNIQuitqB4AUeU7_1Q",
+      authDomain: "foot-b7d96.firebaseapp.com",
+      projectId: "foot-b7d96",
+      storageBucket: "foot-b7d96.firebasestorage.app",
+      messagingSenderId: "295019500598",
+      appId: "1:295019500598:web:7b9f1e431c0cf68adb7497",
+      measurementId: "G-JKJL32C8JP"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const googleProvider = new firebase.auth.GoogleAuthProvider();
+    googleProvider.setCustomParameters({ prompt: 'select_account' });
+
+    // ---------- Constants ----------
+    const ADMIN_EMAIL = 'admin1234@gmail.com';
+    const ADMIN_PASS  = 'Admin1234';
+    const ADMIN_OTP   = '123456';
+    const DASHBOARD_URL = 'dashboard.html';
+    const ADMIN_URL     = 'admin.html';
+
+    // ---------- Toast helpers ----------
+    function showError(message){
+      const div=document.createElement('div');
+      div.style.cssText=`position:fixed;top:20px;right:20px;background:rgba(239,68,68,.9);color:#fff;padding:16px 20px;border-radius:12px;backdrop-filter:blur(10px);box-shadow:0 8px 32px rgba(239,68,68,.3);z-index:1000;animation:slideIn .3s ease-out`;
+      div.textContent=message;document.body.appendChild(div);setTimeout(()=>div.remove(),4000);
+    }
+    function showSuccess(message){
+      const div=document.createElement('div');
+      div.style.cssText=`position:fixed;top:20px;right:20px;background:rgba(34,197,94,.9);color:#fff;padding:16px 20px;border-radius:12px;backdrop-filter:blur(10px);box-shadow:0 8px 32px rgba(34,197,94,.3);z-index:1000;animation:slideIn .3s ease-out`;
+      div.textContent=message;document.body.appendChild(div);setTimeout(()=>div.remove(),3000);
+    }
+    (function(){const s=document.createElement('style');s.textContent='@keyframes slideIn{from{opacity:0;transform:translateX(100%)}to{opacity:1;transform:translateX(0)}}';document.head.appendChild(s);})();
+
+    // ---------- OTP modal logic ----------
+    const otpModal = document.getElementById('otpModal');
+    const otpInput = document.getElementById('otpInput');
+    const otpErr   = document.getElementById('otpErr');
+    const otpOk    = document.getElementById('otpOk');
+    const otpCancel= document.getElementById('otpCancel');
+    let pendingAdminUser = null; // can be {email, displayName} or null
+
+    function openOtp(user){
+      pendingAdminUser = user;
+      otpErr.textContent = '';
+      otpInput.value = '';
+      otpModal.classList.add('show');
+      otpModal.setAttribute('aria-hidden','false');
+      setTimeout(()=>otpInput.focus(),50);
+    }
+    function closeOtp(){
+      otpModal.classList.remove('show');
+      otpModal.setAttribute('aria-hidden','true');
+    }
+    otpOk.addEventListener('click', ()=>{
+      const code = otpInput.value.trim();
+      if(code !== ADMIN_OTP){
+        otpErr.textContent = 'Invalid code. Try another.';
+        return;
+      }
+      // success -> persist + redirect admin
+      const u = pendingAdminUser || {email: ADMIN_EMAIL, displayName:'Admin'};
+      localStorage.setItem('auth','1');
+      localStorage.setItem('userName', u.displayName || 'Admin');
+      localStorage.setItem('userEmail', u.email || ADMIN_EMAIL);
+      sessionStorage.setItem('adminVerified','1');
+      showSuccess('Admin verified!');
+      setTimeout(()=>{ location.href = ADMIN_URL; }, 600);
+    });
+    otpCancel.addEventListener('click', async ()=>{
+      closeOtp();
+      pendingAdminUser = null;
+      try{ await auth.signOut(); }catch{}
+      showError('Admin verification cancelled.');
+    });
+    otpInput.addEventListener('keydown', e=>{ if(e.key==='Enter') otpOk.click(); });
+
+    // ---------- Post-login routing ----------
+    function proceedUser(user){
+      localStorage.setItem('auth','1');
+      if(user?.displayName) localStorage.setItem('userName', user.displayName);
+      if(user?.email)       localStorage.setItem('userEmail', user.email);
+      showSuccess(`Welcome ${user.displayName || user.email || ''}!`);
+      setTimeout(()=>{ location.href = DASHBOARD_URL; }, 800);
+    }
+    function afterLogin(user){
+      const email = (user.email || '').toLowerCase();
+      if(email === ADMIN_EMAIL.toLowerCase()){
+        openOtp(user); // require OTP for admin even if logged in via Firebase/Google
+        return;
+      }
+      proceedUser(user);
+    }
+
+    // If already signed in (refresh)
+    auth.onAuthStateChanged(u=>{
+      if(!u) return;
+      const isAdmin = (u.email||'').toLowerCase() === ADMIN_EMAIL.toLowerCase();
+      if(isAdmin && sessionStorage.getItem('adminVerified')!=='1'){
+        openOtp(u);
+      }
+    });
+
+    // ---------- Email/password sign-in ----------
+    document.getElementById('signInForm').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const btn = document.querySelector('.sign-in-btn');
+      if(!email || !password){ showError('Please fill in all fields'); return; }
+
+      // NEW: local bypass for admin pair (không gọi Firebase)
+      if(email.toLowerCase() === ADMIN_EMAIL.toLowerCase() && password === ADMIN_PASS){
+        openOtp({ email: ADMIN_EMAIL, displayName: 'Admin' });
+        return;
+      }
+
+      // Normal users -> Firebase
+      const original = btn.innerHTML; btn.innerHTML='Signing in...'; btn.disabled=true;
+      try{
+        const cred = await auth.signInWithEmailAndPassword(email, password);
+        afterLogin(cred.user);
+      }catch(err){
+        console.error('Sign in error:', err);
+        // gợi ý dễ hiểu hơn
+        let msg = err.message || 'Sign in failed. Please try again.';
+        if(err.code === 'auth/invalid-login-credentials' || err.code === 'auth/wrong-password'){
+          msg = 'Email or password is incorrect, or the account does not exist.';
+        }
+        if(err.code === 'auth/user-disabled'){ msg = 'This account has been disabled.'; }
+        showError(`Firebase: ${msg}`);
+      }finally{
+        btn.innerHTML=original; btn.disabled=false;
+      }
+    });
+
+    // ---------- Google sign-in ----------
+    async function signInWithGoogle(){
+      try{
+        const res = await auth.signInWithPopup(googleProvider);
+        afterLogin(res.user);
+      }catch(error){
+        if(error.code==='auth/popup-blocked' || error.code==='auth/operation-not-supported-in-this-environment'){
+          try{ await auth.signInWithRedirect(googleProvider); return; }catch(e){ handleGoogleErr(e); }
+        } else {
+          handleGoogleErr(error);
+        }
+      }
+    }
+    function handleGoogleErr(error){
+      console.error('Google sign in error:', error);
+      let msg='Google sign in failed. Please try again.';
+      switch(error.code){
+        case 'auth/unauthorized-domain': msg=`This domain ("${location.hostname}") is not authorized in Firebase → Authentication → Settings → Authorized domains.`; break;
+        case 'auth/operation-not-allowed': msg='Google provider is not enabled. Turn it on in Firebase Authentication → Sign-in method.'; break;
+        case 'auth/network-request-failed': msg='Network error. Please check your connection.'; break;
+        case 'auth/popup-closed-by-user':
+        case 'auth/cancelled-popup-request': msg='Sign-in popup was closed.'; break;
+      }
+      showError(msg);
+    }
+
+    // ---------- Utilities ----------
+    async function showForgotPassword(){
+      const email=document.getElementById('email').value.trim();
+      if(!email){ showError('Please enter your email first'); return; }
+      try{ await auth.sendPasswordResetEmail(email); showSuccess('Password reset email sent!'); }
+      catch(e){
+        let msg='Failed to send password reset email.';
+        if(e.code==='auth/user-not-found') msg='No account found with this email.';
+        if(e.code==='auth/invalid-email') msg='Please enter a valid email.';
+        showError(msg);
+      }
+    }
+    function togglePassword(){
+      const f=document.getElementById('password'); const svg=document.querySelector('.password-toggle svg');
+      if(f.type==='password'){ f.type='text'; svg.innerHTML='<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24M1 1l22 22"/>'; }
+      else { f.type='password'; svg.innerHTML='<path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>'; }
+    }
+  </script>
+</body>
+</html>

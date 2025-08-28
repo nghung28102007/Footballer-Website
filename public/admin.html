@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FootballPro • Admin</title>
+  <style>
+    :root{
+      --bg1:#0b3f24; --bg2:#052e1a; --panel:#0f3a2b; --panel2:#0c3326;
+      --line:#145e46; --fg:#ecfdf5; --muted:#99f6e4;
+      --pri1:#22c55e; --pri2:#16a34a; --ink:#052e1a; --warn:#ef4444;
+    }
+    [data-theme="light"]{
+      --bg1:#ecfffb; --bg2:#e9fff5; --panel:#ffffff; --panel2:#f5fff9;
+      --line:#d5f5e6; --fg:#0a2f24; --muted:#0f5130; --ink:#ffffff;
+      --pri1:#16a34a; --pri2:#22c55e; --warn:#dc2626;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{font-family:Inter,system-ui,Arial,sans-serif}
+    body{min-height:100vh;background:linear-gradient(135deg,var(--bg1),var(--bg2));color:var(--fg)}
+    a{color:inherit}
+
+    .wrap{max-width:1200px;margin:0 auto;padding:16px}
+    .bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.04)}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:900}
+    .mark{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:linear-gradient(135deg,var(--pri1),var(--pri2));color:var(--ink)}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}
+    .btn{padding:.6rem .9rem;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--fg);font-weight:800;cursor:pointer}
+    .btn.pri{background:linear-gradient(135deg,var(--pri1),var(--pri2));border-color:transparent;color:var(--ink)}
+    .btn.warn{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.35);color:#fecaca}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
+
+    .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;margin-top:16px}
+    .card{border:1px solid var(--line);background:var(--panel);border-radius:16px;overflow:hidden}
+    .card h3{padding:12px 14px;border-bottom:1px solid var(--line);font-weight:900}
+    .card .body{padding:12px 14px}
+
+    .tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+    .input,select{background:var(--panel2);border:1px solid var(--line);color:var(--fg);border-radius:10px;padding:.55rem .7rem}
+    .input::placeholder{opacity:.7}
+
+    table{width:100%;border-collapse:separate;border-spacing:0 8px}
+    th,td{padding:8px 10px;border:1px solid var(--line);background:var(--panel2);vertical-align:middle}
+    th{background:rgba(255,255,255,.05);text-align:left}
+    .tbl-img{width:38px;height:38px;border-radius:999px;object-fit:cover;border:1px solid var(--line)}
+    .row-actions{display:flex;gap:6px;flex-wrap:wrap}
+
+    .form{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .form .full{grid-column:1/-1}
+    .preview{display:flex;align-items:center;gap:10px}
+    .preview img{width:64px;height:64px;border-radius:50%;object-fit:cover;border:1px solid var(--line)}
+    .help{opacity:.8;font-size:12px}
+
+    .footer{margin-top:16px;display:flex;justify-content:space-between;opacity:.8;font-size:13px}
+    .toast{position:fixed;top:16px;right:16px;padding:12px 14px;border-radius:12px;background:rgba(34,197,94,.9);color:#fff;box-shadow:0 12px 36px rgba(0,0,0,.35);opacity:0;transform:translateY(-10px);transition:.2s;z-index:50}
+    .toast.err{background:rgba(239,68,68,.9)}
+    .toast.show{opacity:1;transform:translateY(0)}
+    @media (max-width:900px){ .grid{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- Top bar -->
+    <div class="bar">
+      <div class="brand">
+        <div class="mark">FP</div>
+        <div>
+          <div style="font-weight:900">FootballPro Admin</div>
+          <div id="adminInfo" style="opacity:.75;font-size:12.5px">—</div>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="toDashboard" class="btn">↩︎ Dashboard</button>
+        <button id="themeToggle" class="btn">🌗 Theme</button>
+        <button id="logout" class="btn warn">Đăng xuất</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- List -->
+      <section class="card">
+        <h3>Danh sách cầu thủ</h3>
+        <div class="body">
+          <div class="tools">
+            <input id="q" class="input" placeholder="Tìm theo tên/đội/vị trí…"/>
+            <select id="fltPos">
+              <option value="all">All</option>
+              <option>GK</option><option>DEF</option><option>MID</option><option>FWD</option>
+            </select>
+            <button id="exportJson"  class="btn">⬇️ Export JSON</button>
+            <label class="btn" style="cursor:pointer">⬆️ Import JSON
+              <input id="importJson" type="file" accept="application/json" style="display:none">
+            </label>
+            <button id="resetDemo" class="btn warn">↺ Reset demo</button>
+          </div>
+
+          <div style="overflow:auto">
+            <table id="tbl">
+              <thead>
+                <tr>
+                  <th>Avatar</th><th>Tên</th><th>Pos</th><th>Đội</th>
+                  <th>Rating</th><th>Goals</th><th>Assists</th><th>Matches</th><th>Speed</th><th style="width:160px">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Editor -->
+      <section class="card">
+        <h3 id="formTitle">Thêm / Sửa cầu thủ</h3>
+        <div class="body">
+          <form id="frm" class="form" autocomplete="off">
+            <input type="hidden" id="id">
+            <label>Họ tên<input id="name" class="input" required></label>
+            <label>Vị trí
+              <select id="position" class="input">
+                <option>FWD</option><option>MID</option><option>DEF</option><option>GK</option>
+              </select>
+            </label>
+            <label>Đội bóng<input id="team" class="input"></label>
+            <label>Rating (0–10)<input id="rating" type="number" step="0.1" min="0" max="10" class="input"></label>
+            <label>Goals<input id="goals" type="number" min="0" class="input"></label>
+            <label>Assists<input id="assists" type="number" min="0" class="input"></label>
+            <label>Matches<input id="matches" type="number" min="0" class="input"></label>
+            <label>Speed (0–100)<input id="speed" type="number" min="0" max="100" class="input"></label>
+
+            <div class="full preview">
+              <img id="avatarPreview" src="" alt="preview" />
+              <div style="flex:1">
+                <label class="help">Ảnh (chọn 1 trong 2 cách)</label>
+                <div style="display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap">
+                  <label class="btn">Chọn file<input id="avatarFile" type="file" accept="image/*" style="display:none"></label>
+                  <input id="avatarUrl" class="input" placeholder="Hoặc dán URL ảnh… (http…, data:image…)" style="flex:1">
+                </div>
+              </div>
+            </div>
+
+            <div class="full" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+              <button type="submit" class="btn pri" id="saveBtn">💾 Lưu</button>
+              <button type="button" class="btn" id="newBtn">➕ Mới</button>
+              <button type="button" class="btn warn" id="delBtn" disabled>🗑 Xoá</button>
+            </div>
+          </form>
+          <p class="help" style="margin-top:8px">Mọi thay đổi sẽ lưu vào <b>localStorage › playersDB</b> và hiển thị ở <i>dashboard.html</i>.</p>
+        </div>
+      </section>
+    </div>
+
+    <div class="footer">
+      <div>© <span id="y"></span> FootballPro</div>
+      <div id="count"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast">Saved</div>
+
+  <script>
+    // ====== Guard: chỉ admin đã OTP mới vào ======
+    const ADMIN_EMAIL = 'admin1234@gmail.com';
+    (function guard(){
+      const authed = localStorage.getItem('auth')==='1';
+      const email  = (localStorage.getItem('userEmail')||'').toLowerCase();
+      const otpOK  = sessionStorage.getItem('adminVerified')==='1';
+      if(!(authed && email===ADMIN_EMAIL.toLowerCase() && otpOK)){
+        alert('Admin access required. Redirecting to sign in.');
+        location.href='signin.html';
+      }
+    })();
+
+    // ====== Demo data (khớp dashboard) ======
+    const DEMO = [
+      {name:"Lionel Messi",position:"FWD",team:"Inter Miami",rating:9.2,goals:28,assists:15,matches:32,speed:85,avatar:"src/messi.jpg"},
+      {name:"Kylian Mbappé",position:"FWD",team:"Real Madrid",rating:9.0,goals:35,assists:12,matches:38,speed:98,avatar:"src/mbappe.jpg"},
+      {name:"Erling Haaland",position:"FWD",team:"Manchester City",rating:8.9,goals:42,assists:8,matches:40,speed:89,avatar:"src/haaland.jpg"},
+      {name:"Kevin De Bruyne",position:"MID",team:"Manchester City",rating:8.7,goals:12,assists:25,matches:35,speed:78,avatar:"src/kdb.jpg"},
+      {name:"Virgil van Dijk",position:"DEF",team:"Liverpool",rating:8.5,goals:4,assists:3,matches:36,speed:82,avatar:"src/vvd.jpg"},
+      {name:"Alisson Becker",position:"GK",team:"Liverpool",rating:8.4,goals:0,assists:1,matches:34,speed:65,avatar:"src/alisson.jpg"},
+      {name:"Luka Modrić",position:"MID",team:"Real Madrid",rating:8.3,goals:6,assists:18,matches:33,speed:75,avatar:"src/modric.jpg"},
+      {name:"Robert Lewandowski",position:"FWD",team:"Barcelona",rating:8.6,goals:31,assists:9,matches:37,speed:79,avatar:"src/lewan.jpg"},
+      {name:"Karim Benzema",position:"FWD",team:"Al-Ittihad",rating:8.2,goals:24,assists:11,matches:29,speed:80,avatar:"src/benzema.jpg"},
+      {name:"N'Golo Kanté",position:"MID",team:"Al-Ittihad",rating:8.1,goals:3,assists:7,matches:28,speed:84,avatar:"src/kante.jpg"},
+      {name:"Sergio Ramos",position:"DEF",team:"PSG",rating:7.9,goals:5,assists:2,matches:31,speed:72,avatar:"src/ramos.jpg"},
+      {name:"Thibaut Courtois",position:"GK",team:"Real Madrid",rating:8.3,goals:0,assists:0,matches:32,speed:68,avatar:"src/courtois.jpg"},
+      {name:"Bukayo Saka",position:"FWD",team:"Arsenal",rating:8.2,goals:17,assists:12,matches:36,speed:90,avatar:"src/saka.jpg"},
+      {name:"Jude Bellingham",position:"MID",team:"Real Madrid",rating:8.8,goals:23,assists:10,matches:39,speed:86,avatar:"src/bellingham.jpg"},
+      {name:"Mohamed Salah",position:"FWD",team:"Liverpool",rating:8.7,goals:27,assists:11,matches:38,speed:91,avatar:"src/salah.jpg"},
+      {name:"Declan Rice",position:"MID",team:"Arsenal",rating:8.1,goals:6,assists:8,matches:37,speed:83,avatar:"src/rice.jpg"},
+      {name:"Antoine Griezmann",position:"FWD",team:"Atletico Madrid",rating:8.4,goals:22,assists:9,matches:37,speed:82,avatar:"src/griezman.jpg"},
+      {name:"Marc-André ter Stegen",position:"GK",team:"Barcelona",rating:8.5,goals:0,assists:1,matches:34,speed:61,avatar:"src/stegen.jpg"},
+      {name:"Ruben Dias",position:"DEF",team:"Manchester City",rating:8.3,goals:2,assists:3,matches:35,speed:76,avatar:"src/dias.jpg"},
+      {name:"Jamal Musiala",position:"MID",team:"Bayern Munich",rating:8.4,goals:16,assists:12,matches:34,speed:89,avatar:"src/musiala.jpg"},
+    ];
+
+    // ====== State / Storage ======
+    const KEY = 'playersDB';
+    let players = loadPlayers().map((p, i)=>({ id: p.id ?? (i+1), ...p }));
+    let selId = null;
+
+    function loadPlayers(){
+      try{
+        const raw = localStorage.getItem(KEY);
+        if(raw){ const arr = JSON.parse(raw); if(Array.isArray(arr)) return arr; }
+      }catch{}
+      return DEMO;
+    }
+    function savePlayers(){
+      localStorage.setItem(KEY, JSON.stringify(players));
+      ping('Đã lưu');
+      render();
+    }
+
+    // ====== UI helpers ======
+    const $ = s => document.querySelector(s);
+    const $$ = s => [...document.querySelectorAll(s)];
+    const tblBody = $('#tbl tbody');
+    const toast = $('#toast');
+    function ping(msg, err=false){
+      toast.textContent = msg;
+      toast.classList.toggle('err', err);
+      toast.classList.add('show');
+      clearTimeout(ping._t);
+      ping._t = setTimeout(()=> toast.classList.remove('show'), 1600);
+    }
+    function setFormTitle(text){ $('#formTitle').textContent = text; }
+
+    // ====== Render list ======
+    function render(){
+      const q = $('#q').value.trim().toLowerCase();
+      const pf = $('#fltPos').value;
+      let list = players;
+      if(pf!=='all') list = list.filter(p=>p.position===pf);
+      if(q){
+        list = list.filter(p =>
+          p.name.toLowerCase().includes(q) ||
+          (p.team||'').toLowerCase().includes(q) ||
+          (p.position||'').toLowerCase().includes(q)
+        );
+      }
+      $('#count').textContent = `${list.length} players`;
+
+      tblBody.innerHTML = list.map(p=>`
+        <tr data-id="${p.id}">
+          <td><img class="tbl-img" src="${p.avatar||''}" alt=""></td>
+          <td>${p.name||''}</td>
+          <td>${p.position||''}</td>
+          <td>${p.team||''}</td>
+          <td>${p.rating??''}</td>
+          <td>${p.goals??''}</td>
+          <td>${p.assists??''}</td>
+          <td>${p.matches??''}</td>
+          <td>${p.speed??''}</td>
+          <td>
+            <div class="row-actions">
+              <button class="btn" data-act="edit">Sửa</button>
+              <button class="btn warn" data-act="del">Xoá</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+
+      // row actions
+      tblBody.querySelectorAll('button[data-act]').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const id = parseInt(btn.closest('tr').dataset.id,10);
+          if(btn.dataset.act==='edit') editPlayer(id);
+          else delPlayer(id);
+        });
+      });
+    }
+
+    // ====== Form ======
+    const F = {
+      id:       $('#id'),
+      name:     $('#name'),
+      position: $('#position'),
+      team:     $('#team'),
+      rating:   $('#rating'),
+      goals:    $('#goals'),
+      assists:  $('#assists'),
+      matches:  $('#matches'),
+      speed:    $('#speed'),
+      file:     $('#avatarFile'),
+      url:      $('#avatarUrl'),
+      prev:     $('#avatarPreview'),
+      delBtn:   $('#delBtn')
+    };
+
+    function clearForm(){
+      selId = null;
+      F.id.value = '';
+      F.name.value=''; F.team.value='';
+      F.rating.value=''; F.goals.value=''; F.assists.value='';
+      F.matches.value=''; F.speed.value='';
+      F.position.value='FWD';
+      F.url.value=''; F.file.value='';
+      F.prev.src=''; F.delBtn.disabled = true;
+      setFormTitle('Thêm cầu thủ');
+    }
+    function fillForm(p){
+      selId = p.id;
+      F.id.value = p.id;
+      F.name.value = p.name||'';
+      F.position.value = p.position||'FWD';
+      F.team.value = p.team||'';
+      F.rating.value = p.rating??'';
+      F.goals.value = p.goals??'';
+      F.assists.value = p.assists??'';
+      F.matches.value = p.matches??'';
+      F.speed.value = p.speed??'';
+      F.url.value = (p.avatar||'').startsWith('data:') ? '' : (p.avatar||'');
+      F.prev.src = p.avatar||'';
+      F.delBtn.disabled = false;
+      setFormTitle('Sửa cầu thủ');
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+    function editPlayer(id){
+      const p = players.find(x=>x.id===id);
+      if(p) fillForm(p);
+    }
+    function delPlayer(id){
+      const p = players.find(x=>x.id===id);
+      if(!p) return;
+      if(!confirm(`Xoá "${p.name}"?`)) return;
+      players = players.filter(x=>x.id!==id);
+      if(selId===id) clearForm();
+      savePlayers();
+    }
+
+    // file -> dataURL
+    F.file.addEventListener('change', ()=>{
+      const f = F.file.files?.[0];
+      if(!f) return;
+      const rd = new FileReader();
+      rd.onload = () => { F.prev.src = rd.result; F.url.value=''; };
+      rd.readAsDataURL(f);
+    });
+    F.url.addEventListener('input', ()=>{
+      if(F.url.value.trim()) F.prev.src = F.url.value.trim();
+    });
+
+    $('#frm').addEventListener('submit', (e)=>{
+      e.preventDefault();
+      // validate + build object
+      const obj = {
+        id: selId ?? (players.length? Math.max(...players.map(p=>p.id||0))+1 : 1),
+        name: F.name.value.trim(),
+        position: F.position.value,
+        team: F.team.value.trim(),
+        rating: parseFloat(F.rating.value)||0,
+        goals: parseInt(F.goals.value||'0',10),
+        assists: parseInt(F.assists.value||'0',10),
+        matches: parseInt(F.matches.value||'0',10),
+        speed: parseInt(F.speed.value||'0',10),
+        avatar: ''
+      };
+      if(!obj.name){ ping('Tên không được trống', true); return; }
+      // avatar priority: file (dataURL) > url > keep old
+      if(F.file.files?.[0]){
+        // đã set preview bằng dataURL ở onload, lấy lại từ preview
+        obj.avatar = F.prev.src;
+      }else if(F.url.value.trim()){
+        obj.avatar = F.url.value.trim();
+      }else{
+        const old = players.find(p=>p.id===selId);
+        obj.avatar = old?.avatar || '';
+      }
+
+      if(selId){ // update
+        players = players.map(p=> p.id===selId ? obj : p);
+      }else{     // add
+        players.push(obj);
+      }
+      savePlayers();
+      clearForm();
+    });
+
+    $('#newBtn').addEventListener('click', clearForm);
+    $('#delBtn').addEventListener('click', ()=>{
+      if(selId) delPlayer(selId);
+    });
+
+    // ====== Tools ======
+    $('#q').addEventListener('input', render);
+    $('#fltPos').addEventListener('change', render);
+
+    $('#exportJson').addEventListener('click', ()=>{
+      const blob = new Blob([JSON.stringify(players,null,2)], {type:'application/json'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'players.json';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    });
+
+    $('#importJson').addEventListener('change', ()=>{
+      const f = $('#importJson').files?.[0];
+      if(!f) return;
+      const rd = new FileReader();
+      rd.onload = ()=>{
+        try{
+          const arr = JSON.parse(rd.result);
+          if(!Array.isArray(arr)) throw new Error('Invalid JSON');
+          // ensure ids
+          let next = players.length? Math.max(...players.map(p=>p.id||0))+1 : 1;
+          players = arr.map((p)=>({ id: p.id ?? next++, ...p }));
+          savePlayers();
+          clearForm();
+          ping('Đã import JSON');
+        }catch(err){ console.error(err); ping('Import lỗi: JSON không hợp lệ', true); }
+      };
+      rd.readAsText(f);
+    });
+
+    $('#resetDemo').addEventListener('click', ()=>{
+      if(!confirm('Khôi phục dữ liệu demo? Thao tác này sẽ ghi đè danh sách hiện tại.')) return;
+      players = DEMO.map((p,i)=>({id:i+1, ...p}));
+      savePlayers();
+      clearForm();
+    });
+
+    // ====== Top bar buttons ======
+    $('#toDashboard').addEventListener('click', ()=> location.href='dashboard.html');
+    $('#logout').addEventListener('click', ()=>{
+      localStorage.removeItem('auth');
+      localStorage.removeItem('userName');
+      localStorage.removeItem('userEmail');
+      sessionStorage.removeItem('adminVerified');
+      location.href='signin.html';
+    });
+    // theme toggle (nhớ như dashboard)
+    function applyTheme(t){ document.documentElement.setAttribute('data-theme',t); }
+    applyTheme(localStorage.getItem('theme')||'dark');
+    $('#themeToggle').addEventListener('click', ()=>{
+      const t=(document.documentElement.getAttribute('data-theme')==='dark')?'light':'dark';
+      localStorage.setItem('theme',t); applyTheme(t);
+    });
+
+    // ====== Init ======
+    document.getElementById('y').textContent = new Date().getFullYear();
+    $('#adminInfo').textContent = (localStorage.getItem('userEmail')||'admin');
+    render();
+    clearForm();
+  </script>
+</body>
+</html>
